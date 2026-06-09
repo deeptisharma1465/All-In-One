@@ -1,0 +1,15 @@
+{
+  "name": "nexus-mail-backend",
+  "version": "1.0.0",
+  "description": "Nexus Mail Backend — Gmail API proxy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "node-fetch": "^2.7.0"
+  }
+}

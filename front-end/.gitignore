@@ -1,5 +1,4 @@
 node_modules/
-__pycache__/
 .env
 js/config.private.js
 .DS_Store

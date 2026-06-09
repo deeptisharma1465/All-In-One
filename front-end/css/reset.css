@@ -1,0 +1,39 @@
+/* ═══════════════════════════════
+   RESET.CSS
+═══════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { height: 100%; }
+
+body {
+  height: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+ul, ol { list-style: none; }
+a { text-decoration: none; color: inherit; }
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  background: none;
+}
+
+img { display: block; max-width: 100%; }
+svg { display: block; flex-shrink: 0; }

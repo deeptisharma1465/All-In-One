@@ -1,0 +1,351 @@
+/* ═══════════════════════════════════════════════════════
+   LAYOUT.CSS  —  App shell, nav rail, 3→4 col grid
+═══════════════════════════════════════════════════════ */
+
+/* smooth theme swap on every element */
+*, *::before, *::after {
+  transition:
+    background-color var(--t-mid),
+    border-color     var(--t-mid),
+    color            var(--t-mid),
+    box-shadow       var(--t-mid);
+}
+/* but NOT width/opacity on profile (has its own) */
+.profile-panel { transition: width var(--t-slow), opacity var(--t-slow) !important; }
+
+/* ── Body ── */
+body {
+  background: var(--bg);
+  color: var(--text-1);
+  position: relative;
+}
+
+/* Ambient gradient mesh (dark & light variants handled via variables) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% -5%,  rgba(129,140,248,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 85% 105%, rgba(124,58,237,0.06)  0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 50%,  rgba(129,140,248,0.02) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse 70% 50% at 15% -5%,  rgba(99,102,241,0.07)  0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 85% 105%, rgba(124,58,237,0.05)   0%, transparent 55%);
+}
+
+/* ── App Shell ── */
+#app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* ══════════════════════════
+   NAV RAIL
+══════════════════════════ */
+.nav-rail {
+  width: var(--nav-w);
+  min-width: var(--nav-w);
+  height: 100%;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 20px;
+  gap: 2px;
+  z-index: 20;
+}
+
+/* Logo mark */
+.nav-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--sent-to) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: var(--glow);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.nav-logo::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255,255,255,0.18);
+  pointer-events: none;
+}
+
+/* Nav icon button */
+.nav-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+
+.nav-btn.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* active left-edge bar */
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 0 var(--r-xs) var(--r-xs) 0;
+}
+
+.nav-spacer { flex: 1; }
+.nav-divider {
+  width: 26px;
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+/* ── Platform brand buttons ── */
+.nav-platform-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: 2px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
+  position: relative;
+}
+
+/* tooltip badge on hover */
+.nav-platform-btn::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface-4);
+  border: 1px solid var(--border-md);
+  color: var(--text-1);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: var(--r-md);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-fast);
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.nav-platform-btn:hover::after { opacity: 1; }
+
+.nav-platform-btn:hover {
+  transform: scale(1.08);
+  border-color: var(--border-md);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-platform-btn.active {
+  border-color: var(--text-1);
+  box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-md);
+  transform: scale(1.05);
+}
+
+/* inner rounded square with brand bg */
+.nav-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-radius var(--t-mid);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-platform-btn:hover .nav-brand-icon {
+  border-radius: var(--r-lg);
+}
+
+.nav-platform-btn.active .nav-brand-icon {
+  border-radius: var(--r-lg);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.theme-toggle:hover {
+  border-color: var(--border-accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+/* hide dark icon in dark, light icon in light */
+[data-theme="dark"]  .icon-sun   { display: none; }
+[data-theme="light"] .icon-moon  { display: none; }
+
+/* ══════════════════════════
+   LEFT SIDEBAR
+══════════════════════════ */
+.sidebar-left {
+  width: var(--sidebar-w);
+  min-width: 240px;
+  max-width: 600px;
+  height: 100%;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  resize: horizontal;
+}
+
+/* ══════════════════════════
+   CHAT AREA
+══════════════════════════ */
+.chat-area {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  position: relative;  /* wallpaper layer anchors here */
+}
+
+/* ══════════════════════════
+   PROFILE PANEL
+══════════════════════════ */
+.profile-panel {
+  width: 0;
+  min-width: 0;
+  height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow: hidden;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+#app.profile-open .profile-panel {
+  width: var(--profile-w);
+  min-width: var(--profile-w);
+  opacity: 1;
+}
+
+/* ══════════════════════════
+   EMPTY STATE
+══════════════════════════ */
+.no-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-3);
+}
+
+.no-chat-icon {
+  width: 76px;
+  height: 76px;
+  background: var(--surface-3);
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+}
+
+.no-chat h2 { font-size: 17px; font-weight: 700; color: var(--text-2); }
+
+.no-chat p {
+  font-size: 13px;
+  line-height: 1.65;
+  text-align: center;
+  max-width: 220px;
+}
+
+/* ══════════════════════════
+   MODE SWITCHING
+   chat-mode (default) vs email-mode
+══════════════════════════ */
+
+/* Chat mode wraps the existing chat content */
+#chatMode {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Email inbox sidebar: hidden by default */
+.sidebar-inbox { display: none; }
+
+/* Email view (main): hidden by default */
+.email-view { display: none; flex-direction: column; flex: 1; }
+
+/* In email mode: show email, hide chat */
+#app.email-mode #chatMode      { display: none; }
+#app.email-mode .email-view    { display: flex; }
+#app.email-mode .sidebar-scroll { display: none; }
+#app.email-mode .sidebar-inbox  { display: flex; }
+#app.email-mode .profile-panel  { display: none !important; }
+

@@ -1,0 +1,114 @@
+/* ═══════════════════════════════════════════════════════════
+   VARIABLES.CSS  —  Dual-theme design token system
+   Stack: Tailwind CDN (utilities) + Lucide Icons + Custom CSS
+═══════════════════════════════════════════════════════════ */
+
+/* ── Dark Theme (default) ── */
+:root,
+[data-theme="dark"] {
+  --bg:          #0b141a;
+  --surface:     #111b21;
+  --surface-2:   #202c33;
+  --surface-3:   #2a3942;
+  --surface-4:   #374045;
+  --surface-hover: #202c33;
+
+  --border:      rgba(255, 255, 255, 0.08);
+  --border-md:   rgba(255, 255, 255, 0.12);
+  --border-accent: rgba(129, 140, 248, 0.3);
+
+  --text-1:      #e9edef;
+  --text-2:      #8696a0;
+  --text-3:      #667781;
+
+  --accent:      #818cf8;
+  --accent-2:    #6366f1;
+  --accent-dim:  rgba(129, 140, 248, 0.12);
+  --accent-glow: rgba(129, 140, 248, 0.25);
+
+  --sent-from:   #005c4b;
+  --sent-to:     #025144;
+
+  --received-bg: #202c33;
+
+  --online:      #34d399;
+  --unread:      #fbbf24;
+
+  --cta:         #a3e635;
+  --cta-hover:   #84cc16;
+  --cta-text:    #080d0a;
+
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:   0 4px 24px rgba(0,0,0,0.55);
+  --shadow-lg:   0 12px 48px rgba(0,0,0,0.65);
+  --glow:        0 0 28px rgba(129,140,248,0.22);
+
+  --scrollbar:   rgba(129,140,248,0.18);
+}
+
+/* ── Light Theme ── */
+[data-theme="light"] {
+  --bg:          #eaecf7;
+  --surface:     #f5f6ff;
+  --surface-2:   #ffffff;
+  --surface-3:   #eceef9;
+  --surface-4:   #e2e5f4;
+  --surface-hover: #dde0f5;
+
+  --border:      rgba(0, 0, 0, 0.07);
+  --border-md:   rgba(0, 0, 0, 0.12);
+  --border-accent: rgba(99, 102, 241, 0.3);
+
+  --text-1:      #0c0f2e;
+  --text-2:      #4a5270;
+  --text-3:      #8890a8;
+
+  --accent:      #6366f1;
+  --accent-2:    #4f46e5;
+  --accent-dim:  rgba(99, 102, 241, 0.10);
+  --accent-glow: rgba(99, 102, 241, 0.18);
+
+  --sent-from:   #4338ca;
+  --sent-to:     #7c3aed;
+
+  --received-bg: #ffffff;
+
+  --online:      #10b981;
+  --unread:      #f59e0b;
+
+  --cta:         #16a34a;
+  --cta-hover:   #15803d;
+  --cta-text:    #ffffff;
+
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.09);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.13);
+  --glow:        0 0 24px rgba(99,102,241,0.15);
+
+  --scrollbar:   rgba(99,102,241,0.22);
+}
+
+/* ── Static constants ── */
+:root {
+  --nav-w:      62px;
+  --sidebar-w:  272px;
+  --profile-w:  308px;
+
+  --r-xs:    4px;
+  --r-sm:    8px;
+  --r-md:    12px;
+  --r-lg:    16px;
+  --r-xl:    22px;
+  --r-2xl:   28px;
+  --r-full:  9999px;
+
+  --t-fast:   140ms ease;
+  --t-mid:    220ms ease;
+  --t-slow:   360ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: var(--r-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }

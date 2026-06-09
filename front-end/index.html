@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Nexus — A premium multi-platform chat dashboard. Manage all your messages from X, Instagram, WhatsApp, LinkedIn and more in one place." />
+  <title>Nexus — Multi-Platform Chat</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons (v0.474) -->
+  <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.min.js"></script>
+
+  <!-- Tailwind CSS (utility helpers) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: { preflight: false },   /* our reset.css handles base */
+      darkMode: ['attribute', '[data-theme="dark"]'],
+    };
+  </script>
+
+  <!-- Supabase JS Client (UMD build — exposes window.supabase) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- Emoji Picker Element -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+
+  <!-- Custom Smooth Scrolling -->
+  <script src="js/smooth-scroll.js"></script>
+
+  <!-- Custom stylesheets -->
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/profile.css" />
+  <link rel="stylesheet" href="css/email.css" />
+</head>
+
+<body>
+<div id="app">
+
+  <!-- ══════════════════════════════════════════════════════
+       1 · NAV RAIL
+  ══════════════════════════════════════════════════════ -->
+  <nav class="nav-rail" aria-label="Platform navigation">
+
+    <!-- Logo -->
+    <div class="nav-logo" title="Nexus">N</div>
+
+    <!-- ── Platform brand icons: X · WhatsApp · Threads · Email · Telegram ── -->
+
+    <!-- X / Twitter -->
+    <button class="nav-platform-btn active" id="nav-x" data-channel="x" title="X (Twitter)" aria-label="X Twitter">
+      <div class="nav-brand-icon" style="background:#000;">
+        <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </div>
+    </button>
+
+    <!-- WhatsApp -->
+    <button class="nav-platform-btn" id="nav-wa" data-channel="wa" title="WhatsApp" aria-label="WhatsApp">
+      <div class="nav-brand-icon" style="background:#25d366;">
+        <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </div>
+    </button>
+
+    <!-- Threads (Meta) -->
+    <button class="nav-platform-btn" id="nav-th" data-channel="th" title="Threads" aria-label="Threads">
+      <div class="nav-brand-icon" style="background:#000;">
+        <svg viewBox="0 0 192 192" fill="white" width="16" height="16">
+          <path d="M141.537 88.988a66.667 66.667 0 00-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.036l13.779 9.452c5.73-8.695 14.724-10.548 21.348-10.548h.23c8.248.054 14.482 2.444 18.525 7.107 2.958 3.385 4.94 8.077 5.928 13.938a108.258 108.258 0 00-13.953-.998c-14.051 0-25.447 3.579-33.795 10.64-8.672 7.322-13.064 17.396-13.064 29.956 0 12.5 4.655 22.548 13.477 29.007 7.426 5.507 16.994 8.264 28.407 8.264 13.892 0 24.857-3.94 32.557-11.707 6.16-6.24 10.006-14.895 11.476-25.696 2.655 1.597 4.816 3.513 6.371 5.728 2.934 4.133 4.392 9.133 4.392 14.84 0 20.318-17.564 42.694-49.346 42.694-23.168 0-40.797-8.462-53.916-25.906-11.368-15.439-16.878-37.33-16.878-67.227 0-29.897 5.51-51.788 16.878-67.228C87.598 17.462 105.227 9 128.395 9c23.405 0 41.116 8.559 52.644 25.433 4.877 7.2 8.602 16.147 11.083 26.48l18.875-4.724c-3.028-12.576-7.865-23.562-14.523-32.73C183.7 7.168 159.152-2.5 128.395-2.5l-.195.001C97.042-.875 73.063 9.08 56.47 28.912 40.918 47.566 32.5 74.01 32.5 96 32.5 117.99 40.918 144.434 56.47 163.088 73.063 182.92 97.042 192.875 128.2 193h.195c27.326-.186 47.908-8.014 63.152-23.902 15.88-16.547 23.953-38.993 23.953-65.098 0-10.066-2.786-19.354-8.037-26.957-5.04-7.305-12.284-12.875-21.926-16.055zM102.481 125.61c-8.09-4.953-8.256-13.9-.167-19.032 5.267-3.35 12.397-4.946 21.188-4.746 4.97.116 9.76.579 14.324 1.373-1.628 20.355-13.049 26.4-22.29 25.78a24.956 24.956 0 01-13.055-3.375z"/>
+        </svg>
+      </div>
+    </button>
+
+    <!-- Email -->
+    <button class="nav-platform-btn" id="nav-email" data-channel="email" title="Email" aria-label="Email">
+      <div class="nav-brand-icon" style="background:linear-gradient(135deg,#ea4335,#fbbc04);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M2 7l10 7 10-7"/>
+        </svg>
+      </div>
+    </button>
+
+    <!-- Telegram -->
+    <button class="nav-platform-btn" id="nav-tg" data-channel="tg" title="Telegram" aria-label="Telegram">
+      <div class="nav-brand-icon" style="background:#26a5e4;">
+        <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+        </svg>
+      </div>
+    </button>
+
+    <div class="nav-spacer"></div>
+
+    <!-- Bottom utilities -->
+    <button class="nav-btn" id="nav-settings" title="Settings" aria-label="Settings">
+      <i data-lucide="settings" class="lucide"></i>
+    </button>
+    <button class="nav-btn" id="nav-logout" title="Sign out" aria-label="Sign out">
+      <i data-lucide="log-out" class="lucide"></i>
+    </button>
+
+    <!-- Theme toggle -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">
+      <i data-lucide="sun"  class="lucide icon-sun"></i>
+      <i data-lucide="moon" class="lucide icon-moon"></i>
+    </button>
+
+  </nav>
+  <!-- /nav-rail -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       2 · LEFT SIDEBAR
+  ══════════════════════════════════════════════════════ -->
+  <aside class="sidebar-left" aria-label="Message categories and contacts">
+
+    <!-- Header -->
+    <div class="sidebar-header">
+      <div class="sidebar-title">Direct Messages</div>
+      <div class="sidebar-email">hussein.saddam@gmail.com</div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-bar">
+        <i data-lucide="search" class="lucide"></i>
+        <input type="text" id="searchInput" placeholder="Search messages…" aria-label="Search messages" autocomplete="off" />
+        <button class="search-filter" aria-label="Filter messages">
+          <i data-lucide="sliders-horizontal" class="lucide"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-scroll">
+
+      <!-- ── Direct Messages ── -->
+      <div class="dm-header">
+        <span class="dm-title">Direct Message</span>
+        <button class="dm-filter" id="dmFilter" aria-label="Sort by newest">
+          Newest <i data-lucide="chevron-down" class="lucide"></i>
+        </button>
+      </div>
+
+      <div class="dm-list" id="dmList">
+
+        <!-- Alfredo Workman -->
+        <div class="dm-row" id="dm-alfredo" data-convo="alfredo-workman" role="button" tabindex="0" aria-label="Open chat with Alfredo Workman">
+          <div class="dm-avatar-wrap">
+            <div class="dm-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">AW</div>
+            <span class="status-dot"></span>
+          </div>
+          <div class="dm-info">
+            <div class="dm-name">Alfredo Workman</div>
+            <div class="dm-preview">Hi, I noticed a squir…</div>
+          </div>
+          <div class="dm-meta">
+            <span class="dm-time">04:02 am</span>
+            <span class="dm-dot"></span>
+          </div>
+        </div>
+
+        <!-- Kianna George -->
+        <div class="dm-row" id="dm-kianna" data-convo="kianna-george" role="button" tabindex="0" aria-label="Open chat with Kianna George">
+          <div class="dm-avatar-wrap">
+            <div class="dm-avatar" style="background:linear-gradient(135deg,#10b981,#059669);">KG</div>
+            <span class="status-dot online"></span>
+          </div>
+          <div class="dm-info">
+            <div class="dm-name">Kianna George</div>
+            <div class="dm-preview">Hi, I noticed a squir…</div>
+          </div>
+          <div class="dm-meta">
+            <span class="dm-time">05:49 pm</span>
+            <span class="dm-dot"></span>
+          </div>
+        </div>
+
+        <!-- Ann Schleifer -->
+        <div class="dm-row" id="dm-ann" data-convo="ann-schleifer" role="button" tabindex="0" aria-label="Open chat with Ann Schleifer">
+          <div class="dm-avatar-wrap">
+            <div class="dm-avatar" style="background:linear-gradient(135deg,#a78bfa,#6366f1);">AS</div>
+            <span class="status-dot online"></span>
+          </div>
+          <div class="dm-info">
+            <div class="dm-name">Ann Schleifer</div>
+            <div class="dm-preview">Hi, I noticed a squir…</div>
+          </div>
+          <div class="dm-meta">
+            <span class="dm-time">01:34 pm</span>
+            <span class="dm-dot"></span>
+          </div>
+        </div>
+
+        <!-- Craig Culhane -->
+        <div class="dm-row" id="dm-craig" data-convo="craig-culhane" role="button" tabindex="0" aria-label="Open chat with Craig Culhane">
+          <div class="dm-avatar-wrap">
+            <div class="dm-avatar" style="background:linear-gradient(135deg,#64748b,#475569);">CC</div>
+            <span class="status-dot offline"></span>
+          </div>
+          <div class="dm-info">
+            <div class="dm-name">Craig Culhane</div>
+            <div class="dm-preview">Hi, I noticed a squir…</div>
+          </div>
+          <div class="dm-meta">
+            <span class="dm-time">03:48 am</span>
+          </div>
+        </div>
+
+        <!-- Maya Johnson -->
+        <div class="dm-row" id="dm-maya" data-convo="maya-johnson" role="button" tabindex="0" aria-label="Open chat with Maya Johnson">
+          <div class="dm-avatar-wrap">
+            <div class="dm-avatar" style="background:linear-gradient(135deg,#ec4899,#db2777);">MJ</div>
+            <span class="status-dot online"></span>
+          </div>
+          <div class="dm-info">
+            <div class="dm-name">Maya Johnson</div>
+            <div class="dm-preview">Can you review this?…</div>
+          </div>
+          <div class="dm-meta">
+            <span class="dm-time">09:21 am</span>
+          </div>
+        </div>
+
+      </div><!-- /dm-list -->
+    </div><!-- /sidebar-scroll -->
+
+    <!-- ══════════════════════════════════════════
+         EMAIL INBOX  (hidden until email mode)
+    ══════════════════════════════════════════ -->
+    <div class="sidebar-inbox" id="sidebarInbox">
+
+      <!-- Compose -->
+      <div class="compose-wrap">
+        <button class="compose-btn" id="composeBtn" aria-label="Compose new email">
+          <i data-lucide="pencil" class="lucide"></i> Compose
+        </button>
+      </div>
+
+      <!-- Category tabs -->
+      <div class="inbox-tabs" role="tablist">
+        <button class="inbox-tab active" id="tab-primary" role="tab" aria-selected="true">Primary</button>
+        <button class="inbox-tab" id="tab-social" role="tab" aria-selected="false">Social</button>
+        <button class="inbox-tab" id="tab-promo" role="tab" aria-selected="false">Promos</button>
+      </div>
+
+      <!-- Email rows -->
+      <div class="inbox-list" id="inboxList" role="list"></div>
+
+    </div><!-- /sidebar-inbox -->
+
+  </aside><!-- /sidebar-left -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       3 · CHAT AREA
+  ══════════════════════════════════════════════════════ -->
+  <main class="chat-area" id="chatMain" aria-label="Chat and email window">
+
+    <!-- ── Chat mode (default) ── -->
+    <div id="chatMode">
+
+    <!-- Empty state -->
+    <div class="no-chat" id="noChatPlaceholder">
+      <div class="no-chat-icon">
+        <i data-lucide="message-square-dashed" class="lucide" style="width:32px;height:32px;"></i>
+      </div>
+      <h2>No conversation selected</h2>
+      <p>Pick a contact from the left panel to start chatting.</p>
+    </div>
+
+    <!-- Chat content (shown when DM selected) -->
+    <div id="chatContent" style="display:none; flex-direction:column; flex:1; min-height:0; height:100%;">
+
+      <!-- Header -->
+      <header class="chat-header" id="chatHeader">
+        <div class="chat-hdr-avatar">
+          <div class="chat-hdr-avatar-inner" id="chatHdrAvatar"></div>
+          <span class="chat-hdr-online" id="chatHdrOnline"></span>
+        </div>
+        <div class="chat-hdr-info">
+          <button class="chat-hdr-name" id="chatNameBtn" aria-label="View contact profile" title="Click to view profile">
+            Loading…
+          </button>
+          <div class="chat-hdr-status" id="chatStatus">Online</div>
+        </div>
+        <div class="chat-hdr-actions">
+          <button class="hdr-icon-btn" id="chatSearchBtn" title="Search in chat" aria-label="Search in chat">
+            <i data-lucide="search" class="lucide"></i>
+          </button>
+          <button class="hdr-icon-btn" id="chatPhoneBtn" title="Voice call" aria-label="Voice call">
+            <i data-lucide="phone" class="lucide"></i>
+          </button>
+          <button class="hdr-icon-btn" id="chatVideoBtn" title="Video call" aria-label="Video call">
+            <i data-lucide="video" class="lucide"></i>
+          </button>
+          <!-- Three-dots menu -->
+          <div class="chat-menu-wrap" id="chatMenuWrap">
+            <button class="hdr-icon-btn" id="chatMenuBtn" title="More options" aria-label="More options">
+              <i data-lucide="ellipsis-vertical" class="lucide"></i>
+            </button>
+            <!-- Dropdown -->
+            <div class="chat-dropdown" id="chatDropdown" aria-hidden="true">
+              <button class="chat-dd-item" id="ddSetBg">
+                <i data-lucide="image" class="lucide"></i> Set background
+              </button>
+              <button class="chat-dd-item danger" id="ddRemoveBg">
+                <i data-lucide="image-off" class="lucide"></i> Remove background
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Hidden file input for background -->
+        <input type="file" id="wallpaperInput" accept="image/*" style="display:none;" aria-hidden="true" />
+      </header>
+
+      <!-- Chat wallpaper layer (behind messages, low brightness) -->
+      <div class="chat-wallpaper" id="chatWallpaper" aria-hidden="true"></div>
+
+      <!-- Messages -->
+      <div class="messages-container" id="messagesWrap" role="log" aria-live="polite" aria-label="Chat messages"></div>
+
+      <!-- Input bar -->
+      <div class="chat-input-bar">
+
+        <!-- Attachment trigger wrap (relative for dropdown positioning) -->
+        <div class="attach-wrap" id="attachWrap">
+          <button class="input-attach-btn" id="attachBtn" title="Attach file" aria-label="Attach file">
+            <i data-lucide="paperclip" class="lucide"></i>
+          </button>
+
+          <!-- Attachment type menu -->
+          <div class="attach-menu" id="attachMenu" aria-hidden="true">
+            <button class="attach-item" id="attachDoc"   aria-label="Attach document">
+              <span class="attach-icon attach-icon--doc"><i data-lucide="file-text"  class="lucide"></i></span>
+              <span class="attach-label">Document</span>
+              <span class="attach-hint">Any format</span>
+            </button>
+            <button class="attach-item" id="attachImg"   aria-label="Attach image">
+              <span class="attach-icon attach-icon--img"><i data-lucide="image"      class="lucide"></i></span>
+              <span class="attach-label">Photo</span>
+              <span class="attach-hint">JPG, PNG, GIF…</span>
+            </button>
+            <button class="attach-item" id="attachVid"   aria-label="Attach video">
+              <span class="attach-icon attach-icon--vid"><i data-lucide="video"      class="lucide"></i></span>
+              <span class="attach-label">Video</span>
+              <span class="attach-hint">MP4, MKV, AVI…</span>
+            </button>
+            <button class="attach-item" id="attachAud"   aria-label="Attach audio">
+              <span class="attach-icon attach-icon--aud"><i data-lucide="music"      class="lucide"></i></span>
+              <span class="attach-label">Music</span>
+              <span class="attach-hint">MP3, WAV, FLAC…</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hidden file inputs (one per type) -->
+        <input type="file" id="fileDoc" style="display:none" aria-hidden="true" />
+        <input type="file" id="fileImg" style="display:none" aria-hidden="true"
+               accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/bmp,image/tiff" />
+        <input type="file" id="fileVid" style="display:none" aria-hidden="true"
+               accept="video/mp4,video/x-matroska,video/x-msvideo,video/quicktime,video/webm,video/mpeg,video/3gpp" />
+        <input type="file" id="fileAud" style="display:none" aria-hidden="true"
+               accept="audio/mpeg,audio/wav,audio/ogg,audio/flac,audio/aac,audio/mp4,audio/x-ms-wma,audio/webm" />
+
+        <div class="msg-input-wrap">
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Type a message…"
+            aria-label="Type your message"
+            autocomplete="off"
+          />
+          <button class="emoji-btn" id="emojiBtn" title="Insert emoji" aria-label="Insert emoji">😊</button>
+        </div>
+        <button class="send-btn" id="sendBtn" aria-label="Send message">
+          Send
+          <i data-lucide="send" class="lucide"></i>
+        </button>
+
+        <!-- Emoji Picker Popup -->
+        <div id="emojiPickerPopup" style="display: none; position: absolute; bottom: 70px; right: 20px; z-index: 100; box-shadow: var(--shadow-lg); border-radius: var(--r-md); overflow: hidden; background: var(--surface-2);">
+          <emoji-picker></emoji-picker>
+        </div>
+      </div>
+
+    </div><!-- /chatContent -->
+
+    </div><!-- /chatMode -->
+
+    <!-- ── Email mode ── -->
+    <div class="email-view" id="emailView">
+
+      <!-- No email selected -->
+      <div class="no-email" id="noEmailPlaceholder">
+        <div class="no-email-icon">
+          <i data-lucide="mail" class="lucide" style="width:32px;height:32px;"></i>
+        </div>
+        <h2>No email selected</h2>
+        <p>Select an email from your inbox to read it here.</p>
+      </div>
+
+      <!-- Email reader (shown when email selected) -->
+      <div id="emailContent" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+
+        <!-- Toolbar -->
+        <div class="email-toolbar">
+          <button class="email-tool-btn" id="emailArchiveBtn" title="Archive" aria-label="Archive">
+            <i data-lucide="archive" class="lucide"></i> Archive
+          </button>
+          <button class="email-tool-btn danger" id="emailDeleteBtn" title="Delete" aria-label="Delete">
+            <i data-lucide="trash-2" class="lucide"></i> Delete
+          </button>
+          <div class="email-tool-sep"></div>
+          <button class="email-tool-btn" id="emailMarkBtn" title="Mark as unread" aria-label="Mark as unread">
+            <i data-lucide="mail" class="lucide"></i> Mark unread
+          </button>
+          <button class="email-tool-btn" id="emailSpamBtn" title="Report spam" aria-label="Report spam">
+            <i data-lucide="shield-alert" class="lucide"></i> Spam
+          </button>
+          <div class="email-tool-sep"></div>
+          <button class="email-tool-btn" id="emailLabelBtn" title="Add label" aria-label="Add label">
+            <i data-lucide="tag" class="lucide"></i> Label
+          </button>
+        </div>
+
+        <!-- Scrollable thread -->
+        <div class="email-thread" id="emailThread">
+          <div class="email-subject-heading" id="emailSubjectHeading"></div>
+          <!-- email message cards injected by JS -->
+        </div>
+
+        <!-- Quick reply / forward buttons -->
+        <div class="email-quick-actions" id="emailQuickActions">
+          <button class="email-quick-btn" id="replyBtn" aria-label="Reply">
+            <i data-lucide="corner-up-left" class="lucide"></i> Reply
+          </button>
+          <button class="email-quick-btn" id="replyAllBtn" aria-label="Reply all">
+            <i data-lucide="corner-up-left" class="lucide"></i> Reply all
+          </button>
+          <button class="email-quick-btn" id="forwardBtn" aria-label="Forward">
+            <i data-lucide="corner-up-right" class="lucide"></i> Forward
+          </button>
+        </div>
+
+        <!-- Inline reply composer (hidden until Reply clicked) -->
+        <div class="reply-composer" id="replyComposer" style="display:none; margin-bottom:20px;">
+          <div class="reply-hdr">
+            <span class="reply-hdr-title">Reply</span>
+            <button class="reply-close" id="replyClose" aria-label="Close reply">
+              <i data-lucide="chevron-down" class="lucide"></i>
+            </button>
+          </div>
+          <div class="reply-field">
+            <span class="reply-field-label">To</span>
+            <span class="reply-field-val" id="replyTo">—</span>
+          </div>
+          <div class="reply-field">
+            <span class="reply-field-label">Subject</span>
+            <span class="reply-field-val" id="replySubject">—</span>
+          </div>
+          <textarea id="replyTextarea" placeholder="Write your reply…" aria-label="Email reply body"></textarea>
+          <div class="reply-toolbar">
+            <div class="reply-format-tools">
+              <button class="fmt-btn" title="Bold" aria-label="Bold"><b>B</b></button>
+              <button class="fmt-btn" title="Italic" aria-label="Italic"><i>I</i></button>
+              <button class="fmt-btn" title="Underline" aria-label="Underline"><u>U</u></button>
+              <button class="fmt-btn" title="Attach file" aria-label="Attach file">
+                <i data-lucide="paperclip" class="lucide"></i>
+              </button>
+              <button class="fmt-btn" title="Insert link" aria-label="Insert link">
+                <i data-lucide="link" class="lucide"></i>
+              </button>
+              <button class="fmt-btn" title="Emoji" aria-label="Emoji">😊</button>
+            </div>
+            <div class="reply-right-actions">
+              <button class="reply-discard-btn" id="replyDiscardBtn" title="Discard draft" aria-label="Discard draft">
+                <i data-lucide="trash-2" class="lucide"></i>
+              </button>
+              <button class="reply-send-btn" id="replySendBtn" aria-label="Send email">
+                <i data-lucide="send" class="lucide"></i> Send
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /emailContent -->
+    </div><!-- /email-view -->
+
+  </main>
+  <!-- /chat-area -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       4 · PROFILE PANEL  (hidden by default, WhatsApp-style)
+  ══════════════════════════════════════════════════════ -->
+  <aside class="profile-panel" id="profilePanel" aria-label="Contact profile" aria-hidden="true">
+    <div class="profile-inner">
+
+      <!-- Topbar with close -->
+      <div class="profile-topbar">
+        <span class="profile-topbar-title">Contact Info</span>
+        <button class="profile-close" id="profileClose" aria-label="Close profile panel">
+          <i data-lucide="x" class="lucide"></i>
+        </button>
+      </div>
+
+      <!-- Profile card -->
+      <div class="profile-card">
+        <div class="profile-av-ring">
+          <div class="profile-av-inner" id="profileAvatarBg"></div>
+        </div>
+        <div class="profile-name" id="profileName">—</div>
+        <div class="profile-handle" id="profileHandle">@—</div>
+
+        <!-- Action buttons -->
+        <div class="profile-actions">
+          <button class="prof-action" id="profFlag" title="Flag" aria-label="Flag contact">
+            <div class="prof-action-icon"><i data-lucide="flag" class="lucide"></i></div>
+            <span class="prof-action-label">Flag</span>
+          </button>
+          <button class="prof-action" id="profMute" title="Mute" aria-label="Mute contact">
+            <div class="prof-action-icon"><i data-lucide="bell-off" class="lucide"></i></div>
+            <span class="prof-action-label">Mute</span>
+          </button>
+          <button class="prof-action" id="profBlock" title="Block" aria-label="Block contact">
+            <div class="prof-action-icon"><i data-lucide="shield-off" class="lucide"></i></div>
+            <span class="prof-action-label">Block</span>
+          </button>
+          <button class="prof-action" id="profPin" title="Pin" aria-label="Pin contact">
+            <div class="prof-action-icon"><i data-lucide="pin" class="lucide"></i></div>
+            <span class="prof-action-label">Pin</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Accordion sections -->
+      <div class="profile-sections">
+
+        <!-- Shared Document -->
+        <div class="acc-item" id="acc-docs">
+          <div class="acc-header" role="button" tabindex="0" aria-expanded="false">
+            <span class="acc-title">Shared Documents</span>
+            <span class="acc-chevron"><i data-lucide="chevron-down" class="lucide"></i></span>
+          </div>
+          <div class="acc-body">
+            <div class="acc-content">
+              <div class="doc-item">
+                <div class="doc-icon">📄</div>
+                <div>
+                  <div class="doc-name">Project_Brief_v2.pdf</div>
+                  <div class="doc-meta">2.4 MB · Yesterday</div>
+                </div>
+              </div>
+              <div class="doc-item">
+                <div class="doc-icon">📊</div>
+                <div>
+                  <div class="doc-name">Q3_Analytics_Report.xlsx</div>
+                  <div class="doc-meta">1.1 MB · Monday</div>
+                </div>
+              </div>
+              <div class="doc-item">
+                <div class="doc-icon">🖼️</div>
+                <div>
+                  <div class="doc-name">UI_Mockup_Final.fig</div>
+                  <div class="doc-meta">8.7 MB · Last week</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shared Media -->
+        <div class="acc-item open" id="acc-media">
+          <div class="acc-header" role="button" tabindex="0" aria-expanded="true">
+            <span class="acc-title">Shared Media</span>
+            <span class="acc-chevron"><i data-lucide="chevron-down" class="lucide"></i></span>
+          </div>
+          <div class="acc-body">
+            <div class="acc-content">
+              <div class="media-grid">
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=75" alt="media" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=75" alt="media" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&q=75" alt="media" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=200&q=75" alt="media" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=200&q=75" alt="media" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=200&q=75" alt="media" loading="lazy" /></div>
+              </div>
+              <button class="view-all-btn" id="viewAllMedia">View All (1,647)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shared Posts -->
+        <div class="acc-item" id="acc-posts">
+          <div class="acc-header" role="button" tabindex="0" aria-expanded="false">
+            <span class="acc-title">Shared Posts</span>
+            <span class="acc-chevron"><i data-lucide="chevron-down" class="lucide"></i></span>
+          </div>
+          <div class="acc-body">
+            <div class="acc-content">
+              <div class="media-grid">
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1559305616-3f99cd43e353?w=200&q=75" alt="post" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=200&q=75" alt="post" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&q=75" alt="post" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=200&q=75" alt="post" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&q=75" alt="post" loading="lazy" /></div>
+                <div class="media-thumb"><img src="https://images.unsplash.com/photo-1493770348161-369560ae357d?w=200&q=75" alt="post" loading="lazy" /></div>
+              </div>
+              <button class="view-all-btn" id="viewAllPosts">View All (342)</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /profile-sections -->
+    </div><!-- /profile-inner -->
+  </aside>
+  <!-- /profile-panel -->
+
+</div><!-- /#app -->
+
+<!-- ══════════════════════════════════════════════════════
+     MEDIA LIGHTBOX  (portal — outside #app)
+══════════════════════════════════════════════════════ -->
+<div class="lb-backdrop" id="lbBackdrop" aria-modal="true" role="dialog" aria-label="Media preview" aria-hidden="true">
+
+  <!-- Top bar -->
+  <div class="lb-topbar">
+    <span class="lb-filename" id="lbFilename"></span>
+    <div class="lb-top-actions">
+      <button class="lb-action-btn" id="lbShareBtn" title="Share" aria-label="Share">
+        <i data-lucide="share-2" class="lucide"></i>
+        <span>Share</span>
+      </button>
+      <button class="lb-action-btn lb-download" id="lbDownloadBtn" title="Download" aria-label="Download">
+        <i data-lucide="download" class="lucide"></i>
+        <span>Download</span>
+      </button>
+      <button class="lb-close-btn" id="lbCloseBtn" aria-label="Close preview">
+        <i data-lucide="x" class="lucide"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Media stage -->
+  <div class="lb-stage" id="lbStage">
+    <!-- img or video injected by JS -->
+  </div>
+
+  <!-- Bottom caption bar -->
+  <div class="lb-caption" id="lbCaption"></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GMAIL AUTH OVERLAY  (shown before email mode)
+══════════════════════════════════════════════════════ -->
+<div class="auth-overlay" id="authOverlay" aria-modal="true" role="dialog" aria-label="Sign in to Gmail" aria-hidden="true">
+  <div class="auth-card" id="authCard">
+
+    <!-- Animated background blobs -->
+    <div class="auth-blob auth-blob-1"></div>
+    <div class="auth-blob auth-blob-2"></div>
+    <div class="auth-blob auth-blob-3"></div>
+
+    <!-- Close button -->
+    <button class="auth-close" id="authClose" aria-label="Close">
+      <i data-lucide="x" class="lucide"></i>
+    </button>
+
+    <!-- Gmail logo area -->
+    <div class="auth-logo-wrap">
+      <div class="auth-gmail-logo">
+        <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" fill="#EA4335"/>
+        </svg>
+      </div>
+      <div class="auth-logo-text">
+        <span class="auth-logo-nexus">Nexus</span>
+        <span class="auth-logo-email">Mail</span>
+      </div>
+    </div>
+
+    <!-- Heading -->
+    <h2 class="auth-title">Connect your Gmail</h2>
+    <p class="auth-subtitle">Sign in with Google to access your inbox and manage emails directly from Nexus.</p>
+
+    <!-- Google sign-in button -->
+    <button class="auth-google-btn" id="authGoogleBtn">
+      <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      <span>Continue with Google</span>
+    </button>
+
+    <!-- Divider + privacy note -->
+    <p class="auth-privacy">By continuing, you agree to Nexus's Terms of Service and Privacy Policy. Your Gmail data is only used to display emails within this app.</p>
+
+    <!-- Features -->
+    <div class="auth-features">
+      <div class="auth-feature-item">
+        <div class="auth-feature-icon">
+          <i data-lucide="shield-check" class="lucide"></i>
+        </div>
+        <div>
+          <div class="auth-feature-title">Secure OAuth</div>
+          <div class="auth-feature-desc">Google-grade authentication</div>
+        </div>
+      </div>
+      <div class="auth-feature-item">
+        <div class="auth-feature-icon">
+          <i data-lucide="lock" class="lucide"></i>
+        </div>
+        <div>
+          <div class="auth-feature-title">Private</div>
+          <div class="auth-feature-desc">We never store your password</div>
+        </div>
+      </div>
+      <div class="auth-feature-item">
+        <div class="auth-feature-icon">
+          <i data-lucide="zap" class="lucide"></i>
+        </div>
+        <div>
+          <div class="auth-feature-title">Instant access</div>
+          <div class="auth-feature-desc">One click, you're in</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- App logic -->
+<script src="js/config.private.js"></script>
+<script src="js/config.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/email.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/main.js"></script>
+
+<!-- Init Lucide icons -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+</script>
+</body>
+</html>
